@@ -1,6 +1,7 @@
 # FreeRADIUS Prometheus Exporter
 
 Prometheus exporter for [FreeRADIUS](https://freeradius.org) metrics.
+
 Supports FreeRADIUS 3.0.x.
 
 ### Installation
