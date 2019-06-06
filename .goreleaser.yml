@@ -1,0 +1,23 @@
+project_name: freeradius_exporter
+
+builds:
+  - binary: "{{ .ProjectName }}"
+    id: "amd64"
+    hooks:
+      post: upx dist/linux_amd64/freeradius_exporter
+    goos:
+      - linux
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=0
+
+archives:
+  - id: archive
+    wrap_in_directory: true
+    name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Arch }}"
+    files:
+      - README.md
+
+snapshot:
+  name_template: "{{ .Tag }}-snapshot"

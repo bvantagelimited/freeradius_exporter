@@ -17,6 +17,7 @@ radius.secret      | FreeRADIUS client secret.
 radius.timeout     | Timeout, in milliseconds, defaults to `5000`.
 web.listen-address | Address to listen on for web interface and telemetry, defaults to `:9812`.
 web.telemetry-path | Path under which to expose metrics, defaults to `/metrics`.
+version            | Display version information
 
 
 ### Environment Variables

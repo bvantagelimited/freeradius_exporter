@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -14,14 +15,22 @@ import (
 	"github.com/bvantagelimited/freeradius_exporter/collector"
 )
 
+var version, commit, date string
+
 func main() {
 	listenAddr := flag.String("web.listen-address", ":9812", "Address to listen on for web interface and telemetry.")
 	metricsPath := flag.String("web.telemetry-path", "/metrics", "A path under which to expose metrics.")
 	radiusTimeout := flag.Int("radius.timeout", 5000, "Timeout, in milliseconds.")
 	radiusAddr := flag.String("radius.address", getEnv("RADIUS_ADDR", "127.0.0.1:18121"), "Address of FreeRADIUS status server.")
 	radiusSecret := flag.String("radius.secret", getEnv("RADIUS_SECRET", "testing123"), "FreeRADIUS client secret.")
+	appVersion := flag.Bool("version", false, "Display version information")
 
 	flag.Parse()
+
+	if *appVersion {
+		println(filepath.Base(os.Args[0]), version, commit, date)
+		os.Exit(0)
+	}
 
 	registry := prometheus.NewRegistry()
 
