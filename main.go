@@ -22,7 +22,7 @@ func main() {
 	metricsPath := flag.String("web.telemetry-path", "/metrics", "A path under which to expose metrics.")
 	radiusTimeout := flag.Int("radius.timeout", 5000, "Timeout, in milliseconds.")
 	radiusAddr := flag.String("radius.address", getEnv("RADIUS_ADDR", "127.0.0.1:18121"), "Address of FreeRADIUS status server.")
-	radiusSecret := flag.String("radius.secret", getEnv("RADIUS_SECRET", "testing123"), "FreeRADIUS client secret.")
+	radiusSecret := flag.String("radius.secret", getEnv("RADIUS_SECRET", "adminsecret"), "FreeRADIUS client secret.")
 	appVersion := flag.Bool("version", false, "Display version information")
 
 	flag.Parse()
