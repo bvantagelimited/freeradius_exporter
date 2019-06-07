@@ -20,6 +20,7 @@ type Statistics struct {
 	ProxyAuth       Auth
 	Accounting      Accounting
 	ProxyAccounting Accounting
+	Internal        Internal
 }
 
 // Access type.
@@ -51,6 +52,15 @@ type Accounting struct {
 	UnknownTypes      uint32
 }
 
+// Internal type.
+type Internal struct {
+	QueueLenInternal uint32
+	QueueLenProxy    uint32
+	QueueLenAuth     uint32
+	QueueLenAcct     uint32
+	QueueLenDetail   uint32
+}
+
 // FreeRADIUSClient fetches metrics from status server.
 type FreeRADIUSClient struct {
 	addr    string
@@ -67,7 +77,7 @@ func NewFreeRADIUSClient(addr, secret string, timeout int) (*FreeRADIUSClient, e
 	packet := radius.New(radius.CodeStatusServer, []byte(secret))
 
 	rfc2869.MessageAuthenticator_Set(packet, auth)
-	freeradius.SetValue(packet, freeradius.StatisticsType, radius.NewInteger(uint32(freeradius.StatisticsTypeAuthAcctProxyAuthAcct)))
+	freeradius.SetValue(packet, freeradius.StatisticsType, radius.NewInteger(uint32(freeradius.StatisticsTypeAll)))
 
 	encode, err := packet.Encode()
 	if err != nil {
@@ -230,6 +240,26 @@ func (f *FreeRADIUSClient) Stats() (Statistics, error) {
 			return stats, err
 		}
 		stats.ProxyAccounting.UnknownTypes, err = freeradius.GetValue(response, freeradius.TotalProxyAcctUnknownTypes)
+		if err != nil {
+			return stats, err
+		}
+		stats.Internal.QueueLenInternal, err = freeradius.GetValue(response, freeradius.QueueLenInternal)
+		if err != nil {
+			return stats, err
+		}
+		stats.Internal.QueueLenProxy, err = freeradius.GetValue(response, freeradius.QueueLenProxy)
+		if err != nil {
+			return stats, err
+		}
+		stats.Internal.QueueLenAuth, err = freeradius.GetValue(response, freeradius.QueueLenAuth)
+		if err != nil {
+			return stats, err
+		}
+		stats.Internal.QueueLenAcct, err = freeradius.GetValue(response, freeradius.QueueLenAcct)
+		if err != nil {
+			return stats, err
+		}
+		stats.Internal.QueueLenDetail, err = freeradius.GetValue(response, freeradius.QueueLenDetail)
 		if err != nil {
 			return stats, err
 		}
