@@ -68,6 +68,12 @@ const (
 	TotalProxyAcctInvalidRequests   = 159
 	TotalProxyAcctDroppedRequests   = 160
 	TotalProxyAcctUnknownTypes      = 161
+
+	QueueLenInternal = 162
+	QueueLenProxy    = 163
+	QueueLenAuth     = 164
+	QueueLenAcct     = 165
+	QueueLenDetail   = 166
 )
 
 // GetValue returns attribute value.

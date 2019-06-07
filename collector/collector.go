@@ -55,6 +55,11 @@ func NewFreeRADIUSCollector(cl *client.FreeRADIUSClient) *FreeRADIUSCollector {
 			"freeradius_total_proxy_acct_invalid_requests":   prometheus.NewDesc("freeradius_total_proxy_acct_invalid_requests", "Total proxy acct invalid requests", nil, nil),
 			"freeradius_total_proxy_acct_dropped_requests":   prometheus.NewDesc("freeradius_total_proxy_acct_dropped_requests", "Total proxy acct dropped requests", nil, nil),
 			"freeradius_total_proxy_acct_unknown_types":      prometheus.NewDesc("freeradius_total_proxy_acct_unknown_types", "Total proxy acct unknown types", nil, nil),
+			"freeradius_queue_len_internal":                  prometheus.NewDesc("freeradius_queue_len_internal", "Interal queue length", nil, nil),
+			"freeradius_queue_len_proxy":                     prometheus.NewDesc("freeradius_queue_len_proxy", "Proxy queue length", nil, nil),
+			"freeradius_queue_len_auth":                      prometheus.NewDesc("freeradius_queue_len_auth", "Auth queue length", nil, nil),
+			"freeradius_queue_len_acct":                      prometheus.NewDesc("freeradius_queue_len_acct", "Acct queue length", nil, nil),
+			"freeradius_queue_len_detail":                    prometheus.NewDesc("freeradius_queue_len_detail", "Detail queue length", nil, nil),
 		},
 	}
 }
@@ -111,4 +116,9 @@ func (f *FreeRADIUSCollector) Collect(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(f.metrics["freeradius_total_proxy_acct_invalid_requests"], prometheus.CounterValue, float64(stats.ProxyAccounting.InvalidRequests))
 	ch <- prometheus.MustNewConstMetric(f.metrics["freeradius_total_proxy_acct_dropped_requests"], prometheus.CounterValue, float64(stats.ProxyAccounting.DroppedRequests))
 	ch <- prometheus.MustNewConstMetric(f.metrics["freeradius_total_proxy_acct_unknown_types"], prometheus.CounterValue, float64(stats.ProxyAccounting.UnknownTypes))
+	ch <- prometheus.MustNewConstMetric(f.metrics["freeradius_queue_len_internal"], prometheus.GaugeValue, float64(stats.Internal.QueueLenInternal))
+	ch <- prometheus.MustNewConstMetric(f.metrics["freeradius_queue_len_proxy"], prometheus.GaugeValue, float64(stats.Internal.QueueLenProxy))
+	ch <- prometheus.MustNewConstMetric(f.metrics["freeradius_queue_len_auth"], prometheus.GaugeValue, float64(stats.Internal.QueueLenAuth))
+	ch <- prometheus.MustNewConstMetric(f.metrics["freeradius_queue_len_acct"], prometheus.GaugeValue, float64(stats.Internal.QueueLenAcct))
+	ch <- prometheus.MustNewConstMetric(f.metrics["freeradius_queue_len_detail"], prometheus.GaugeValue, float64(stats.Internal.QueueLenDetail))
 }
