@@ -13,13 +13,17 @@ import (
 type FreeRADIUSCollector struct {
 	client  *client.FreeRADIUSClient
 	metrics map[string]*prometheus.Desc
-	mutex   sync.Mutex
+	// indicates if we could reach freeradius or not
+	up    *prometheus.Desc
+	mutex sync.Mutex
 }
 
 // NewFreeRADIUSCollector creates an FreeRADIUSCollector.
 func NewFreeRADIUSCollector(cl *client.FreeRADIUSClient) *FreeRADIUSCollector {
 	return &FreeRADIUSCollector{
 		client: cl,
+		up: prometheus.NewDesc(
+			"freeradius_up", "Boolean gauge of 1 if freeradius was reachable, or 0 if not", nil, nil),
 		metrics: map[string]*prometheus.Desc{
 			"freeradius_total_access_requests":               prometheus.NewDesc("freeradius_total_access_requests", "Total access requests", nil, nil),
 			"freeradius_total_access_accepts":                prometheus.NewDesc("freeradius_total_access_accepts", "Total access accepts", nil, nil),
@@ -78,9 +82,11 @@ func (f *FreeRADIUSCollector) Collect(ch chan<- prometheus.Metric) {
 
 	stats, err := f.client.Stats()
 	if err != nil {
+		ch <- prometheus.MustNewConstMetric(f.up, prometheus.GaugeValue, float64(0))
 		log.Printf("Error fetching stats: %v", err)
 		return
 	}
+	ch <- prometheus.MustNewConstMetric(f.up, prometheus.GaugeValue, float64(1))
 
 	ch <- prometheus.MustNewConstMetric(f.metrics["freeradius_total_access_requests"], prometheus.CounterValue, float64(stats.Access.Requests))
 	ch <- prometheus.MustNewConstMetric(f.metrics["freeradius_total_access_accepts"], prometheus.CounterValue, float64(stats.Access.Accepts))
