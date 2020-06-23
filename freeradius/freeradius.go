@@ -1,6 +1,8 @@
 package freeradius
 
 import (
+	"time"
+
 	"layeh.com/radius"
 	"layeh.com/radius/rfc2865"
 )
@@ -74,10 +76,35 @@ const (
 	QueueLenAuth     = 164
 	QueueLenAcct     = 165
 	QueueLenDetail   = 166
+
+	ServerIPAddress           = 170 // ipaddr
+	ServerPort                = 171 // integer
+	ServerOutstandingRequests = 172 // integer
+
+	// Alive 0; Zombie 1; Dead 2; Idle 3
+	ServerState = 173 // integer
+
+	// When a home server is marked "dead" or "alive"
+	ServerTimeOfDeath = 174 // date
+	ServerTimeOfLife  = 175 // date
+
+	StartTime = 176 // date
+	HUPTime   = 177 // date
+
+	EmaWindow       = 178 // integer
+	EmaUsecWindow1  = 179 // integer
+	EmaUsecWindow10 = 180 // integer
+
+	QueuePPSIn         = 181 // integer
+	QueuePPSOut        = 182 // integer
+	QueueUsePercentage = 183 // integer
+	LastPacketRecv     = 184 // date
+	LastPacketSent     = 185 // date
+	StatsError         = 187 // string
 )
 
-// GetValue returns attribute value.
-func GetValue(p *radius.Packet, typ byte) (value uint32, err error) {
+// GetInt returns attribute value.
+func GetInt(p *radius.Packet, typ byte) (value uint32, err error) {
 	a, ok := lookupVendor(p, typ)
 	if !ok {
 		err = radius.ErrNoAttribute
@@ -85,6 +112,38 @@ func GetValue(p *radius.Packet, typ byte) (value uint32, err error) {
 	}
 	value, err = radius.Integer(a)
 	return
+}
+
+// GetString returns attribute value.
+func GetString(p *radius.Packet, typ byte) (string, error) {
+	a, ok := lookupVendor(p, typ)
+	if !ok {
+		return "", radius.ErrNoAttribute
+	}
+	return radius.String(a), nil
+}
+
+// GetDate returns attribute value.
+func GetDate(p *radius.Packet, typ byte) (time.Time, error) {
+	a, ok := lookupVendor(p, typ)
+	if !ok {
+		return time.Time{}, radius.ErrNoAttribute
+	}
+	return radius.Date(a)
+}
+
+// GetIP returns attribute value.
+func GetIP(p *radius.Packet, typ byte) (string, error) {
+	a, ok := lookupVendor(p, typ)
+	if !ok {
+		return "", radius.ErrNoAttribute
+	}
+	ip, err := radius.IPAddr(a)
+	if err != nil {
+		return "", err
+	}
+
+	return ip.String(), nil
 }
 
 // SetValue sets attribute value.
