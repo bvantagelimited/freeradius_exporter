@@ -4,7 +4,7 @@ builds:
   - binary: "{{ .ProjectName }}"
     id: "amd64"
     hooks:
-      post: upx dist/linux_amd64/freeradius_exporter
+      post: upx dist/amd64_linux_amd64/freeradius_exporter
     goos:
       - linux
     goarch:
