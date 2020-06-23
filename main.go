@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -22,6 +23,7 @@ func main() {
 	metricsPath := flag.String("web.telemetry-path", "/metrics", "A path under which to expose metrics.")
 	radiusTimeout := flag.Int("radius.timeout", 5000, "Timeout, in milliseconds.")
 	radiusAddr := flag.String("radius.address", getEnv("RADIUS_ADDR", "127.0.0.1:18121"), "Address of FreeRADIUS status server.")
+	homeServers := flag.String("radius.homeservers", getEnv("RADIUS_HOMESERVERS", ""), "List of FreeRADIUS home servers to check, e.g. '172.28.1.2:1812,172.28.1.3:1812'.")
 	radiusSecret := flag.String("radius.secret", getEnv("RADIUS_SECRET", "adminsecret"), "FreeRADIUS client secret.")
 	appVersion := flag.Bool("version", false, "Display version information")
 
@@ -34,7 +36,9 @@ func main() {
 
 	registry := prometheus.NewRegistry()
 
-	radiusClient, err := client.NewFreeRADIUSClient(*radiusAddr, *radiusSecret, *radiusTimeout)
+	hs := strings.Split(*homeServers, ",")
+
+	radiusClient, err := client.NewFreeRADIUSClient(*radiusAddr, hs, *radiusSecret, *radiusTimeout)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -26,3 +26,4 @@ Name               | Description
 -------------------|------------
 RADIUS_ADDR        | Address of [FreeRADIUS status server](https://wiki.freeradius.org/config/Status).
 RADIUS_SECRET      | FreeRADIUS client secret.
+RADIUS_HOMESERVERS | Addresses of home servers separated by comma, e.g. "172.28.1.2:1812,172.28.1.3:1812"
