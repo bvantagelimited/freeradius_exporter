@@ -12,5 +12,5 @@ require (
 	github.com/prometheus/common v0.0.0-20181126121408-4724e9255275 // indirect
 	github.com/prometheus/procfs v0.0.0-20181126161756-619930b0b471 // indirect
 	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f // indirect
-	layeh.com/radius v0.0.0-20181129000116-83b1b1c7637c
+	layeh.com/radius v0.0.0-20200722122539-99b3878d2518
 )

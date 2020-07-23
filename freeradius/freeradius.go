@@ -167,8 +167,13 @@ func addVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {
 }
 
 func setVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {
-	for i := 0; i < len(p.Attributes[rfc2865.VendorSpecific_Type]); {
-		vendorID, vsa, err := radius.VendorSpecific(p.Attributes[rfc2865.VendorSpecific_Type][i])
+	for i := 0; i < len(p.Attributes); {
+		avp := p.Attributes[i]
+		if avp.Type != rfc2865.VendorSpecific_Type {
+			i++
+			continue
+		}
+		vendorID, vsa, err := radius.VendorSpecific(avp.Attribute)
 		if err != nil || vendorID != VendorID {
 			i++
 			continue
@@ -185,18 +190,22 @@ func setVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {
 			j += int(vsaLen)
 		}
 		if len(vsa) > 0 {
-			copy(p.Attributes[rfc2865.VendorSpecific_Type][i][4:], vsa)
+			copy(avp.Attribute[4:], vsa)
 			i++
 		} else {
-			p.Attributes[rfc2865.VendorSpecific_Type] = append(p.Attributes[rfc2865.VendorSpecific_Type][:i], p.Attributes[rfc2865.VendorSpecific_Type][i+i:]...)
+			p.Attributes = append(p.Attributes[:i], p.Attributes[i+i:]...)
 		}
 	}
 	return addVendor(p, typ, attr)
 }
 
 func lookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute, ok bool) {
-	for _, a := range p.Attributes[rfc2865.VendorSpecific_Type] {
-		vendorID, vsa, err := radius.VendorSpecific(a)
+	for _, avp := range p.Attributes {
+		if avp.Type != rfc2865.VendorSpecific_Type {
+			continue
+		}
+		attr := avp.Attribute
+		vendorID, vsa, err := radius.VendorSpecific(attr)
 		if err != nil || vendorID != VendorID {
 			continue
 		}
