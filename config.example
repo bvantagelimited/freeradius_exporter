@@ -1,0 +1,6 @@
+{
+    "radius.address": "127.0.0.1:18121",
+    "radius.secret": "secret",
+    "radius.timeout": 10000,
+    "radius.homeservers": ""
+}

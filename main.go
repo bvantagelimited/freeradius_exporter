@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/peterbourgon/ff/v3"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
@@ -19,15 +20,28 @@ import (
 var version, commit, date string
 
 func main() {
-	listenAddr := flag.String("web.listen-address", ":9812", "Address to listen on for web interface and telemetry.")
-	metricsPath := flag.String("web.telemetry-path", "/metrics", "A path under which to expose metrics.")
-	radiusTimeout := flag.Int("radius.timeout", 5000, "Timeout, in milliseconds.")
-	radiusAddr := flag.String("radius.address", getEnv("RADIUS_ADDR", "127.0.0.1:18121"), "Address of FreeRADIUS status server.")
-	homeServers := flag.String("radius.homeservers", getEnv("RADIUS_HOMESERVERS", ""), "List of FreeRADIUS home servers to check, e.g. '172.28.1.2:1812,172.28.1.3:1812'.")
-	radiusSecret := flag.String("radius.secret", getEnv("RADIUS_SECRET", "adminsecret"), "FreeRADIUS client secret.")
-	appVersion := flag.Bool("version", false, "Display version information")
+	fs := flag.NewFlagSet("freeradius_exporter", flag.ContinueOnError)
+	appHelp := fs.Bool("help", false, "Display help")
+	appVersion := fs.Bool("version", false, "Display version information")
+	_ = fs.String("config", "", "Config file (optional)")
 
-	flag.Parse()
+	listenAddr := fs.String("web.listen-address", ":9812", "Address to listen on for web interface and telemetry.")
+	metricsPath := fs.String("web.telemetry-path", "/metrics", "A path under which to expose metrics.")
+	radiusTimeout := fs.Int("radius.timeout", 5000, "Timeout, in milliseconds [RADIUS_TIMEOUT].")
+	radiusAddr := fs.String("radius.address", "127.0.0.1:18121", "Address of FreeRADIUS status server [RADIUS_ADDRESS].")
+	homeServers := fs.String("radius.homeservers", "", "List of FreeRADIUS home servers to check, e.g. '172.28.1.2:1812,172.28.1.3:1812' [RADIUS_HOMESERVERS].")
+	radiusSecret := fs.String("radius.secret", "adminsecret", "FreeRADIUS client secret [RADIUS_SECRET].")
+
+	err := ff.Parse(fs, os.Args[1:], ff.WithEnvVarNoPrefix(), ff.WithConfigFileFlag("config"), ff.WithConfigFileParser(ff.JSONParser))
+	if err != nil {
+		println(err.Error())
+		os.Exit(1)
+	}
+
+	if *appHelp {
+		fs.PrintDefaults()
+		os.Exit(0)
+	}
 
 	if *appVersion {
 		println(filepath.Base(os.Args[0]), version, commit, date)
@@ -64,11 +78,4 @@ func main() {
 
 	log.Printf("Providing metrics at %s%s", *listenAddr, *metricsPath)
 	log.Fatal(srv.Serve(listener))
-}
-
-func getEnv(key string, defaultVal string) string {
-	if envVal, ok := os.LookupEnv(key); ok {
-		return envVal
-	}
-	return defaultVal
 }
