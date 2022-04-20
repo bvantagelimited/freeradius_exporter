@@ -6,7 +6,7 @@ Supports FreeRADIUS 3.0.x.
 
 ### Installation
 
-    go get -u github.com/bvantagelimited/freeradius_exporter
+    go install github.com/bvantagelimited/freeradius_exporter@latest
 
 ### Usage
 
