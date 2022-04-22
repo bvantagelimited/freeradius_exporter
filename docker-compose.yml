@@ -1,0 +1,37 @@
+version: '3.9'
+
+# adding log rotation using the underlying json mechanism
+x-log: &logging
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"   # maximum size of one file
+      max-file: "10"    # maximum number of files
+
+services:      
+  freeradius-monitor:
+    build: .
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 50M
+        reservations:
+          memory: 10M 
+    <<: *logging
+    restart: ${RESTART_POLICY:-unless-stopped}
+    networks:
+      - freeradius_exporter
+    security_opt:
+      - no-new-privileges:true
+    hostname: radius-monitor-docker
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - ${EXTERNAL_PORT_EXPORTER:-unless-stopped}:9812/tcp
+
+networks:
+  freeradius_exporter:
+    external: false
+    name: freeradius_exporter

@@ -8,6 +8,16 @@ Supports FreeRADIUS 3.0.x.
 
     go install github.com/bvantagelimited/freeradius_exporter@latest
 
+### Run Project using Docker
+
+1. Create .env file template based .env_template
+2. Specify variables in a .env file
+3. Run Project using Docker
+
+```bash
+docker-compose up -d
+```
+
 ### Usage
 
 Name               | Description
@@ -20,7 +30,6 @@ web.listen-address | Address to listen on for web interface and telemetry, defau
 web.telemetry-path | Path under which to expose metrics, defaults to `/metrics`.
 version            | Display version information
 config             | Config file (optional)
-
 
 ### Environment Variables
 
