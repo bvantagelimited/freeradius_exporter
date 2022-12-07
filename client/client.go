@@ -129,7 +129,7 @@ func newPacket(secret []byte, address string, statAttr radius.Attribute) (*radiu
 
 	port, err := strconv.ParseUint(portStr, 10, 32)
 	if err != nil {
-		return nil, fmt.Errorf("failed parsing port ('%v') to uint: %v\n", port, err)
+		return nil, fmt.Errorf("failed parsing port ('%v') to uint: %v", port, err)
 	}
 
 	freeradius.SetValue(packet, freeradius.ServerIPAddress, attrIP)
