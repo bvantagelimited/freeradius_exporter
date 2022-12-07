@@ -109,23 +109,27 @@ func newPacket(secret []byte, address string, statAttr radius.Attribute) (*radiu
 
 	host, portStr, err := net.SplitHostPort(address)
 	if err != nil {
-		log.Fatalf("failed parsing home server ip ('%v'): %v\n", address, err)
+		return nil, fmt.Errorf("failed parsing home server ip ('%v'): %w", address, err)
 	}
 	portStr = strings.TrimPrefix(portStr, ":")
 
-	ip := net.ParseIP(host)
+	var ip net.IP
+	ip = net.ParseIP(host)
 	if ip == nil {
-		log.Fatalln("ip is nil")
+		ips, err := net.LookupIP(host)
+		if err == nil && len(ips) > 0 {
+			ip = ips[0]
+		}
 	}
 
 	attrIP, err := radius.NewIPAddr(ip)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
 	port, err := strconv.ParseUint(portStr, 10, 32)
 	if err != nil {
-		log.Fatalf("failed parsing port ('%v') to uint: %v\n", port, err)
+		return nil, fmt.Errorf("failed parsing port ('%v') to uint: %v\n", port, err)
 	}
 
 	freeradius.SetValue(packet, freeradius.ServerIPAddress, attrIP)
@@ -150,7 +154,7 @@ func NewFreeRADIUSClient(addr string, homeServers []string, secret string, timeo
 	client.metrics = metrics
 	packet, err := newPacket([]byte(secret), addr, radius.NewInteger(uint32(freeradius.StatisticsTypeAll)))
 	if err != nil {
-		log.Fatalf("failed creating new packet for address '%v'\n", addr)
+		log.Fatalf("failed creating new packet for address '%v': %v\n", addr, err)
 	}
 	client.packets = append(client.packets, packetWrapper{packet: packet, address: addr})
 
@@ -166,7 +170,7 @@ func NewFreeRADIUSClient(addr string, homeServers []string, secret string, timeo
 				freeradius.StatisticsTypeHomeServer,
 		)))
 		if err != nil {
-			log.Fatalf("failed creating new packet for address '%v'\n", addr)
+			log.Fatalf("failed creating new packet for address '%v': %v\n", addr, err)
 		}
 		client.packets = append(client.packets, packetWrapper{packet: packet, address: hs})
 	}
