@@ -163,12 +163,37 @@ func NewFreeRADIUSClient(addr string, homeServers []string, secret string, timeo
 		if hs == "" {
 			continue
 		}
-		packet, err := newPacket([]byte(secret), hs, radius.NewInteger(uint32(
+
+		statAttr := radius.NewInteger(uint32(
 			freeradius.StatisticsTypeAuthentication| // will give "Home server is not auth" stats error when server is acct (but won't fail and give the available metrics)
-				freeradius.StatisticsTypeAccounting| // will give "Home server is not acct" stats error when server is auth (but won't fail and give the available metrics)
-				freeradius.StatisticsTypeInternal|
-				freeradius.StatisticsTypeHomeServer,
-		)))
+			freeradius.StatisticsTypeAccounting| // will give "Home server is not acct" stats error when server is auth (but won't fail and give the available metrics)
+			freeradius.StatisticsTypeInternal|
+			freeradius.StatisticsTypeHomeServer,
+		))
+
+		if strings.Count(hs, ":") == 2 { // has third parameter
+			index := strings.LastIndex(hs, ":")
+			hsType := hs[index+1:]
+			hs = hs[:index]
+
+			if hsType == "auth" {
+				statAttr = radius.NewInteger(uint32(
+					freeradius.StatisticsTypeAuthentication|
+					freeradius.StatisticsTypeInternal|
+					freeradius.StatisticsTypeHomeServer,
+				))
+			} else if hsType == "acct" {
+				statAttr = radius.NewInteger(uint32(
+					freeradius.StatisticsTypeAccounting|
+					freeradius.StatisticsTypeInternal|
+					freeradius.StatisticsTypeHomeServer,
+				))
+			} else {
+				log.Fatalf("unknown server type: '%v'", hsType)
+			}
+		}
+
+		packet, err := newPacket([]byte(secret), hs, statAttr)
 		if err != nil {
 			log.Fatalf("failed creating new packet for address '%v': %v\n", addr, err)
 		}
