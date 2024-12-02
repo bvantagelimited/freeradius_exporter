@@ -122,7 +122,15 @@ func newPacket(secret []byte, address string, statAttr radius.Attribute) (*radiu
 		}
 	}
 
-	attrIP, err := radius.NewIPAddr(ip)
+	var attrIP radius.Attribute
+	if ip.To16() != nil {
+		attrIP, err = radius.NewIPv6Addr(ip)
+	} else if ip.To4() != nil {
+		attrIP, err = radius.NewIPAddr(ip)
+	} else {
+		return nil, fmt.Errorf("invalid IP address: %v", host)
+	}
+
 	if err != nil {
 		return nil, err
 	}
