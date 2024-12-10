@@ -594,7 +594,7 @@ var metrics = map[string]*prometheus.Desc{
 	"freeradius_total_proxy_acct_invalid_requests":   prometheus.NewDesc("freeradius_total_proxy_acct_invalid_requests", "Total proxy acct invalid requests", []string{"address"}, nil),
 	"freeradius_total_proxy_acct_dropped_requests":   prometheus.NewDesc("freeradius_total_proxy_acct_dropped_requests", "Total proxy acct dropped requests", []string{"address"}, nil),
 	"freeradius_total_proxy_acct_unknown_types":      prometheus.NewDesc("freeradius_total_proxy_acct_unknown_types", "Total proxy acct unknown types", []string{"address"}, nil),
-	"freeradius_queue_len_internal":                  prometheus.NewDesc("freeradius_queue_len_internal", "Interal queue length", []string{"address"}, nil),
+	"freeradius_queue_len_internal":                  prometheus.NewDesc("freeradius_queue_len_internal", "Internal queue length", []string{"address"}, nil),
 	"freeradius_queue_len_proxy":                     prometheus.NewDesc("freeradius_queue_len_proxy", "Proxy queue length", []string{"address"}, nil),
 	"freeradius_queue_len_auth":                      prometheus.NewDesc("freeradius_queue_len_auth", "Auth queue length", []string{"address"}, nil),
 	"freeradius_queue_len_acct":                      prometheus.NewDesc("freeradius_queue_len_acct", "Acct queue length", []string{"address"}, nil),
