@@ -74,7 +74,7 @@ RADIUS_HOMESERVERS | Addresses of home servers separated by comma, e.g. "172.28.
 | freeradius_total_proxy_acct_invalid_requests   | Total proxy acct invalid requests
 | freeradius_total_proxy_acct_dropped_requests   | Total proxy acct dropped requests
 | freeradius_total_proxy_acct_unknown_types      | Total proxy acct unknown types
-| freeradius_queue_len_internal                  | Interal queue length
+| freeradius_queue_len_internal                  | Internal queue length
 | freeradius_queue_len_proxy                     | Proxy queue length
 | freeradius_queue_len_auth                      | Auth queue length
 | freeradius_queue_len_acct                      | Acct queue length
