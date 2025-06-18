@@ -23,6 +23,8 @@ radius.timeout     | Timeout, in milliseconds, defaults to `5000`.
 radius.homeservers | Addresses of home servers separated by comma, e.g. "172.28.1.2:1812:auth,172.28.1.3:1813:acct", auth/acct is optional and defaults to all
 web.listen-address | Address to listen on for web interface and telemetry, defaults to `:9812`.
 web.telemetry-path | Path under which to expose metrics, defaults to `/metrics`.
+web.auth-token     | Auth token required in `X-Auth-Token` header to access `web.telemetry-path` (optional).
+web.allowed-ips    | Comma-separated list of IPs or CIDR ranges allowed to access `web.telemetry-path` (optional).
 version            | Display version information
 config             | Config file (optional)
 
